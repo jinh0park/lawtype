@@ -80,10 +80,15 @@ function parseCivilLawJson(jsonData: CivilLawJson): LawArticle[] {
       });
     }
 
+    // 6. Remove parentheses containing Hanja characters (e.g., "(民法)")
+    // Matches optional space + ( any-char-sequence containing Hanja any-char-sequence )
+    const hanjaRegex = /\s*\([^)]*[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF][^)]*\)/g;
+    const cleanedText = fullText.replace(hanjaRegex, "");
+
     result.push({
       number: `제${jo.조문번호}조`,
       title: jo.조문제목 || "",
-      content: fullText.trim()
+      content: cleanedText.trim()
     });
   });
 

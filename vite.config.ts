@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      }
+      },
+      build: {
+        outDir: 'docs', // 빌드 결과물이 저장될 폴더명
+      },
     };
 });
