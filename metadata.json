@@ -1,0 +1,5 @@
+{
+  "name": "LawType (판례 타자 연습)",
+  "description": "AI가 생성한 실제 판례 문장으로 연습하는 고급 한국어 타자 연습 웹 애플리케이션입니다.",
+  "requestFramePermissions": []
+}
