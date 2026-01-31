@@ -39,7 +39,27 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSentenceComplete = (result: SentenceResult) => {
+  const handleSentenceComplete = async (result: SentenceResult) => {
+    // Check if skipped (0 score)
+    if (result.cpm === 0 && result.accuracy === 0) {
+        // Skip logic: Replace current sentence with a new one
+        try {
+            const newSentences = await fetchCivilLawSentences(selectedDifficulty, 1);
+            if (newSentences.length > 0) {
+                setSentences(prev => {
+                    const next = [...prev];
+                    next[currentSentenceIndex] = newSentences[0];
+                    return next;
+                });
+                // Reset stats for the new sentence
+                setCurrentStats({ cpm: 0, accuracy: 100, timeElapsed: 0, totalErrors: 0, progress: 0 });
+            }
+        } catch (e) {
+            console.error("Failed to fetch replacement sentence", e);
+        }
+        return;
+    }
+
     setResults(prev => [...prev, result]);
     
     if (currentSentenceIndex < sentences.length - 1) {

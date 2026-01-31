@@ -69,6 +69,17 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Skip Shortcut: Ctrl + Enter or Cmd + Enter
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      onComplete({
+        original: sentence,
+        typed: input,
+        cpm: 0,
+        accuracy: 0
+      });
+      return;
+    }
+
     if (e.key === 'Enter') {
       // Loose check for length (90%)
       if (input.length >= sentence.length * 0.9) {
@@ -85,6 +96,17 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
 
   const handleContainerClick = () => {
     inputRef.current?.focus();
+  };
+
+  // Determine font size based on length
+  // Default (Short): text-3xl md:text-[2.5rem] (100%)
+  // Medium (~150 chars): approx 80% of 2.5rem -> ~2rem (text-2xl or custom)
+  // Hard (>250 chars): approx 60% of 2.5rem -> ~1.5rem (text-xl)
+  const getFontSizeClass = () => {
+    const len = sentence.length;
+    if (len > 250) return "text-xl md:text-[1.5rem]"; // Hard (~60%)
+    if (len > 100) return "text-2xl md:text-[2rem]";  // Medium (~80%)
+    return "text-3xl md:text-[2.5rem]";              // Easy/Short (100%)
   };
 
   return (
@@ -108,7 +130,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
         </div>
 
         {/* Text Area */}
-        <div className="w-full font-serif-kr text-3xl md:text-[2.5rem] leading-[1.8] tracking-tight break-keep text-left" style={{ wordSpacing: '0.1em' }}>
+        <div className={`w-full font-serif-kr ${getFontSizeClass()} leading-[1.8] tracking-tight break-keep text-left`} style={{ wordSpacing: '0.1em' }}>
           {sentence.split('').map((targetChar, index) => {
             const isTyped = index < input.length;
             const inputChar = input[index];
@@ -185,10 +207,15 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
         />
         
         {/* Footer Instructions */}
-        <div className="absolute bottom-8 right-10 text-slate-300 text-sm font-medium select-none flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
-            <span className="font-mono text-xs">PRESS</span>
-            <kbd className="hidden sm:inline-block border border-slate-200 bg-slate-50 rounded px-2 py-1 text-xs font-bold text-slate-500 shadow-[0_2px_0_0_rgb(226,232,240)] translate-y-[-1px]">Enter</kbd>
-            <span className="font-mono text-xs">TO NEXT</span>
+        <div className="absolute bottom-8 right-10 text-slate-300 text-sm font-medium select-none flex flex-col items-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+             <div className="flex items-center gap-2">
+                <span className="font-mono text-xs">Skip</span>
+                <kbd className="hidden sm:inline-block border border-slate-200 bg-slate-50 rounded px-2 py-1 text-xs font-bold text-slate-500 shadow-[0_2px_0_0_rgb(226,232,240)] translate-y-[-1px]">Ctrl+Enter</kbd>
+            </div>
+            <div className="flex items-center gap-2">
+                <span className="font-mono text-xs">Next</span>
+                <kbd className="hidden sm:inline-block border border-slate-200 bg-slate-50 rounded px-2 py-1 text-xs font-bold text-slate-500 shadow-[0_2px_0_0_rgb(226,232,240)] translate-y-[-1px]">Enter</kbd>
+            </div>
         </div>
       </div>
     </div>
