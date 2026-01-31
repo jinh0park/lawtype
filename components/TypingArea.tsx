@@ -114,7 +114,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
       <div 
         ref={containerRef}
         onClick={handleContainerClick}
-        className="group bg-white p-10 md:p-16 rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] border border-slate-100 min-h-[400px] flex flex-col justify-center items-start relative cursor-text transition-all duration-300 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] hover:border-slate-200"
+        className="group bg-white p-10 md:p-16 pb-16 md:pb-20 rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] border border-slate-100 min-h-[450px] flex flex-col justify-center items-start relative cursor-text transition-all duration-300 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] hover:border-slate-200"
       >
         {/* Decorative Header */}
         <div className="absolute top-8 left-10 flex items-center gap-3 select-none">
@@ -130,7 +130,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
         </div>
 
         {/* Text Area */}
-        <div className={`w-full font-serif-kr ${getFontSizeClass()} leading-[1.8] tracking-tight break-keep text-left`} style={{ wordSpacing: '0.1em' }}>
+        <div className={`w-full font-serif-kr ${getFontSizeClass()} leading-[1.8] tracking-tight break-keep text-left my-4`} style={{ wordSpacing: '0.1em' }}>
           {sentence.split('').map((targetChar, index) => {
             const isTyped = index < input.length;
             const inputChar = input[index];
@@ -143,7 +143,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
             //    b) Otherwise (wrong char, or partial match but user moved on) -> Error (Red)
 
             let displayChar = targetChar;
-            let colorClass = "text-slate-200"; // Default: Untyped Gray
+            let colorClass = "text-slate-300"; // Default: Untyped Gray
             
             if (isTyped) {
                 const isCorrect = isEquivalentChar(inputChar, targetChar);
@@ -155,7 +155,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
                 } else {
                     if (inputChar === ' ' && targetChar !== ' ') {
                         // Space Error (Skipping)
-                        colorClass = "text-slate-200";
+                        colorClass = "text-slate-300";
                         displayChar = targetChar;
                     } else if (isLastChar && isHangulPartialMatch(inputChar, targetChar)) {
                         // Partial Match (Only allowed for the active character)
