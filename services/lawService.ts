@@ -54,27 +54,40 @@ function parseCivilLawJson(jsonData: CivilLawJson): LawArticle[] {
 
     // 3. 기본 조문 내용 처리
     if (typeof jo.조문내용 === "string") {
-      fullText += jo.조문내용;
+      // Remove patterns like <신설 2011. 3. 7.> or <개정 ...>
+      const cleanJoContent = jo.조문내용.replace(/<[^>]+>/g, "").trim();
+      fullText += cleanJoContent;
     }
 
     // 4. 항(Hang) 데이터 처리
     if (jo.항) {
       const hangs = Array.isArray(jo.항) ? jo.항 : [jo.항];
       hangs.forEach((hang) => {
-        const hangContent = hang.항내용 || "";
+        let hangContent = hang.항내용 || "";
+        // Remove angle bracket patterns
+        hangContent = hangContent.replace(/<[^>]+>/g, "").trim();
+
         // 항 내용에서 삭제된 경우도 체크 (드물지만 확인)
         if (/삭제\s*[<\[\(]/.test(hangContent)) return;
         
-        fullText += "\n" + hangContent;
+        if (hangContent) {
+            fullText += "\n" + hangContent;
+        }
 
         // 5. 호(Ho) 데이터 처리
         if (hang.호) {
           const hos = Array.isArray(hang.호) ? hang.호 : [hang.호];
           hos.forEach((ho) => {
-             const hoContent = ho.호내용 || "";
+             let hoContent = ho.호내용 || "";
+             // Remove angle bracket patterns
+             hoContent = hoContent.replace(/<[^>]+>/g, "").trim();
+
              // 호 내용에서 삭제된 경우 체크
              if (/삭제\s*[<\[\(]/.test(hoContent)) return;
-             fullText += "\n  " + hoContent;
+             
+             if (hoContent) {
+                fullText += "\n  " + hoContent;
+             }
           });
         }
       });

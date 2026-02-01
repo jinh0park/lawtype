@@ -175,6 +175,9 @@ const App: React.FC = () => {
                 onProgress={setCurrentStats}
             />
             <div className="mt-12 text-center">
+               <p className="text-slate-400 text-[10px] font-medium mb-1 opacity-70">
+                 TIP: ①은 '1'로, ㆍ는 '.'으로 입력 가능합니다.
+               </p>
                <p className="text-slate-300 text-xs font-medium tracking-wide">
                  SOURCE: 국가법령정보센터 (LAW.GO.KR)
                </p>

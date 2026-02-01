@@ -126,13 +126,70 @@ export const isHangulPartialMatch = (inputChar: string, targetChar: string): boo
         }
     }
     
-    // If input has Jong (and it's not empty), it must match
-    if (inputParts.jong) {
-        if (inputParts.jong !== targetParts.jong) return false;
-    }
-    
     return true;
   }
 
   return false;
+};
+
+// Complex Vowels that require 2 keystrokes
+// e.g. ㅘ = ㅗ + ㅏ
+const DOUBLE_KEYSTROKE_VOWELS = new Set([
+  'ㅘ', 'ㅙ', 'ㅚ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅢ'
+]);
+
+// Complex Consonants (Jongseong) that require 2 keystrokes
+// e.g. ㄳ = ㄱ + ㅅ
+const DOUBLE_KEYSTROKE_JONGS = new Set([
+  'ㄳ', 'ㄵ', 'ㄶ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅄ'
+]);
+
+/**
+ * Calculates the total number of keystrokes (Jamos) in a string.
+ * Decomposes Hangul syllables into components.
+ * Complex vowels (e.g., ㅘ) and complex jongseong (e.g., ㄳ) count as 2.
+ */
+export const getJamoCount = (text: string): number => {
+  let count = 0;
+  
+  for (const char of text) {
+    // 1. Try Decompose Hangul Syllable
+    const parts = decomposeHangul(char);
+    
+    if (parts) {
+      // Chosung: Always 1
+      count += 1;
+      
+      // Jungsung: 1 or 2
+      if (DOUBLE_KEYSTROKE_VOWELS.has(parts.jung)) {
+        count += 2;
+      } else {
+        count += 1;
+      }
+      
+      // Jongsung: 0, 1, or 2
+      if (parts.jong) {
+         if (DOUBLE_KEYSTROKE_JONGS.has(parts.jong)) {
+           count += 2;
+         } else {
+           count += 1;
+         }
+      }
+      
+      continue;
+    }
+    
+    // 2. Not a Hangul Syllable (Alphabets, Numbers, Spaces, Symbols, or standalone Jamo)
+    // Standalone Jamo check?
+    // In standard typing, standalone jamo is 1 key.
+    // Complex Jamo standalone? (e.g. 'ㄳ') -> Usually typed as separate keys if using standard 2-set, 
+    // but often treated as 1 char in strings. 
+    // For simplicity, we treat non-decomposable chars as length 1.
+    // NOTE: If user types 'ㄳ' directly (copy paste?), it's 1 char. 
+    // But typing practice usually involves full syllables.
+    
+    count += 1;
+  }
+  
+  return count;
 };

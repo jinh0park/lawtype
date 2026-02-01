@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TypingStats, SentenceResult } from '../types';
-import { isEquivalentChar, isHangulPartialMatch } from '../utils/textUtils';
+import { isEquivalentChar, isHangulPartialMatch, getJamoCount } from '../utils/textUtils';
 
 interface TypingAreaProps {
   sentence: string;
@@ -26,9 +26,9 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ sentence, onComplete, on
     const start = startTime || now;
     const elapsedSeconds = Math.max((now - start) / 1000, 1);
     
-    // Calculate Speed (CPM)
-    // We base CPM on the length of input provided
-    const cpm = Math.round((currentInput.length / elapsedSeconds) * 60);
+    // Calculate Speed (CPM) - Jamo based
+    const jamoCount = getJamoCount(currentInput);
+    const cpm = Math.round((jamoCount / elapsedSeconds) * 60);
     
     // Calculate Accuracy
     let correctChars = 0;
